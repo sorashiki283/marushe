@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>応募者ページ - マルシェ応募</title>
+  <link rel="stylesheet" href="apply.css">
+</head>
+<body class="center">
+  <h1>応募者ページ - マルシェ応募</h1>
+
+  <!-- マルシェの一覧表示 -->
+  <h2>マルシェ一覧</h2>
+  <div id="marketList" class="market-list"></div>
+
+  <script>
+    // ローカルストレージからデータを取得
+    const marketList = JSON.parse(localStorage.getItem('marketList')) || [];
+    const formFields = JSON.parse(localStorage.getItem('formFields')) || [];
+    const appliedMarkets = JSON.parse(localStorage.getItem('appliedMarkets')) || {};
+
+    // マルシェ情報を画面に表示する関数
+    function displayMarkets() {
+      const marketListElement = document.getElementById('marketList');
+      marketListElement.innerHTML = ''; // 初期化
+    
+      marketList.forEach((market, index) => {
+        const marketItem = document.createElement('div');
+        marketItem.classList.add('market-item');
+        
+        // 応募済みかどうかの確認
+        const isApplied = appliedMarkets[index];
+
+        // マルシェの情報を表示し、応募ボタンを作成
+        marketItem.innerHTML = `
+          <strong>開催地:</strong> ${market.location}<br>
+          <strong>日時:</strong> ${market.date}<br>
+          <button onclick="applyMarket(${index})" ${isApplied ? 'disabled' : ''}>
+            ${isApplied ? '応募済み' : '応募'}
+          </button>
+        `;
+        marketListElement.appendChild(marketItem);
+      });
+    }
+
+    // マルシェ応募ボタンを押した際にフォームを表示し、応募情報を保存する関数
+    function applyMarket(index) {
+      const market = marketList[index];
+      
+      // 別タブでフォームページを開く
+      const url = `applyForm.html?marketIndex=${index}`;
+      window.open(url, '_blank');
+    }
+
+    // 初期化: マルシェ情報を表示
+    displayMarkets();
+  </script>
+</body>
+</html>
