@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>応募フォーム</title>
+</head>
+<body>
+  <h1>応募フォーム</h1>
+
+  <form id="applicationForm" onsubmit="submitApplication(event)">
+    <div id="questionsContainer"></div>
+    <input type="hidden" id="marketIndex" value="">
+    <button type="submit">応募する</button>
+  </form>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const marketIndex = urlParams.get('marketIndex');
+    document.getElementById('marketIndex').value = marketIndex;
+
+    const questionsContainer = document.getElementById('questionsContainer');
+    const formQuestions = JSON.parse(localStorage.getItem('formQuestions')) || [];
+
+    // 質問を表示
+    function displayQuestions() {
+      formQuestions.forEach((question, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.innerHTML = `
+          <label>${question.text}:</label>
+          <input type="text" id="answer_${index}" required>
+        `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    // 応募内容を保存
+    function submitApplication(event) {
+      event.preventDefault();
+
+      let appliedMarkets = JSON.parse(localStorage.getItem('appliedMarkets')) || {};
+      if (!appliedMarkets[marketIndex]) {
+        appliedMarkets[marketIndex] = [];
+      }
+
+      const application = {};
+      formQuestions.forEach((question, index) => {
+        const answer = document.getElementById(`answer_${index}`).value;
+        application[question.text] = answer;
+      });
+
+      appliedMarkets[marketIndex].push(application);
+      localStorage.setItem('appliedMarkets', JSON.stringify(appliedMarkets));
+
+      alert('応募が完了しました！');
+      window.close();
+    }
+
+    displayQuestions();
+  </script>
+</body>
+</html>
