@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>応募フォーム作成</title>
+</head>
+<body>
+  <h1>応募フォーム作成</h1>
+  
+  <form id="questionForm" onsubmit="saveQuestions(event)">
+    <div id="questionsContainer"></div>
+    <button type="button" onclick="addQuestion()">質問を追加</button>
+    <button type="submit">保存</button>
+  </form>
+
+  <script>
+    const questionsContainer = document.getElementById('questionsContainer');
+    let formQuestions = JSON.parse(localStorage.getItem('formQuestions')) || [];
+
+    // 既存の質問を表示
+    function displayQuestions() {
+      questionsContainer.innerHTML = '';
+      formQuestions.forEach((question, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.innerHTML = `
+          質問 ${index + 1}: <input type="text" value="${question.text}" oninput="updateQuestion(${index}, this.value)">
+          <button type="button" onclick="removeQuestion(${index})">削除</button>
+        `;
+        questionsContainer.appendChild(questionDiv);
+      });
+    }
+
+    // 質問を追加
+    function addQuestion() {
+      formQuestions.push({ text: '' });
+      displayQuestions();
+    }
+
+    // 質問を更新
+    function updateQuestion(index, value) {
+      formQuestions[index].text = value;
+    }
+
+    // 質問を削除
+    function removeQuestion(index) {
+      formQuestions.splice(index, 1);
+      displayQuestions();
+    }
+
+    // 質問を保存
+    function saveQuestions(event) {
+      event.preventDefault();
+      localStorage.setItem('formQuestions', JSON.stringify(formQuestions));
+      alert('質問が保存されました！');
+      window.close();
+    }
+
+    displayQuestions();
+  </script>
+</body>
+</html>
